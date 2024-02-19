@@ -1,0 +1,90 @@
+# Specify the set you are working on in line  6
+# The algorithm will give you a set of 1-vectors (F1)
+# and a set of 0-vectors (F0)
+
+import random 
+N=[0,1,2,3,4]
+n=len(N)
+
+
+def generate_subsets(N):
+    all_subsets = [[]]
+
+    for element in N:
+        current_subsets = [subset + [element] for subset in all_subsets]
+        all_subsets.extend(current_subsets)
+    return all_subsets
+
+def intersection(S,T):
+    inter=[]
+    for k in S:
+        if k in T:
+            inter.append(k)
+    return inter
+    
+def union(S,T):
+    uni=set()
+    for k in S:
+        uni.add(k)
+    for k in T:
+        uni.add(k)
+    return list(uni)
+
+def setminus(S,T):
+    setm=S
+    for k in T:
+        if k in S:
+            S.remove(k)
+    return(S)
+
+def interval(S,T): # faire un programme récursif
+    ST=[]
+    for k in generate_subsets(setminus(union(S,T),intersection(S,T))):
+        ST.append(union(S,k))
+    return ST
+    
+
+def intercol(F0,F1):
+    coll=[]
+    for k in F0:
+        if k in F1:
+            coll.append(k)
+    return coll
+            
+
+remaining_subsets=generate_subsets(N)
+F0=[]
+F1=[]
+while len(F0)+len(F1) != 2**n:
+    S=random.choice(remaining_subsets)
+    if random.random()<1/2:
+        value=0
+    else:
+        value=1
+    if value==0:
+        if len(F0) !=0:
+            for T in F0:
+                for K in interval(S,T):
+                    if K not in F0:
+                        if K not in F1:
+                            F0.append(K)
+                    if K in remaining_subsets:
+                        remaining_subsets.remove(K)
+        else:
+            F0.append(S)
+    else:
+        if len(F1)!=0:
+            for T in F1:
+                for K in interval(S,T):
+                    if K not in F1:
+                        if K not in F0:
+                            F1.append(K)
+                    if K in remaining_subsets:
+                        remaining_subsets.remove(K)
+        else:
+            F1.append(S)
+    
+    
+print("F0: ",F0)
+print("F1: ",F1)
+    
